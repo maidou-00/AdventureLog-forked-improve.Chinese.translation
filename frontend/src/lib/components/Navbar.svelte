@@ -1,290 +1,163 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
+	// Import Svelte transitions (if you need them)
+	import { fade, slide } from 'svelte/transition';
+	// Import lucide icons – see the docs for available props (size, color, etc.)
+
 	export let data: any;
-	import type { SubmitFunction } from '@sveltejs/kit';
 
-	import DotsHorizontal from '~icons/mdi/dots-horizontal';
-	import Calendar from '~icons/mdi/calendar';
-	import AboutModal from './AboutModal.svelte';
-	import AccountMultiple from '~icons/mdi/account-multiple';
+	import {
+		HouseIcon,
+		MapPinIcon,
+		CalendarIcon,
+		BookImageIcon,
+		MenuIcon,
+		SearchIcon,
+		XIcon,
+		SettingsIcon
+	} from 'lucide-svelte';
+	// Import your UI components
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import Toggle from './ui/theme/toggle.svelte';
+	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import Avatar from './Avatar.svelte';
-	import { page } from '$app/stores';
-	import { t, locale, locales } from 'svelte-i18n';
-	import { themes } from '$lib';
-	import { onMount } from 'svelte';
-	let inputElement: HTMLInputElement | null = null;
+	// import ThemeToggle from "$project/ThemeToggle.svelte";
 
-	// Event listener for focusing input
-	function handleKeydown(event: KeyboardEvent) {
-		// Ignore any keypresses in an input/textarea field, so we don't interfere with typing.
-		if (event.key === '/' && !["INPUT", "TEXTAREA"].includes((event.target as HTMLElement)?.tagName)) {
-			event.preventDefault(); // Prevent browser's search shortcut
-			if (inputElement) {
-				inputElement.focus();
-			}
-		}
-	}
+	let isShowingAboutModal: boolean = false;
 
-	onMount(() => {
-		// Attach event listener on component mount
-		document.addEventListener('keydown', handleKeydown);
+	// Navigation items – note that each icon is a component (see lucide‑svelte docs)
+	const navItems = [
+		{ href: '/dashboard', icon: HouseIcon, label: 'Home', auth: true },
+		{ href: '/adventures', icon: MapPinIcon, label: 'Adventures', auth: true },
+		{ href: '/collections', icon: CalendarIcon, label: 'Calendar', auth: true },
+		{ href: '/calendar', icon: BookImageIcon, label: 'Collections', auth: true },
+		{ href: '/users', icon: SearchIcon, label: 'Users', auth: true },
+		{ href: '/settings', icon: SettingsIcon, label: 'Settings', auth: true }
+	];
 
-		// Cleanup event listener on component destruction
-		return () => {
-			document.removeEventListener('keydown', handleKeydown);
-		};
-	});
+	// Instead of using stores (and the duplicate assignment), we use simple booleans/strings.
+	let isMobileMenuOpen = false;
+	let currentLang = 'en';
 
-	let languages: { [key: string]: string } = {
-		en: 'English',
-		de: 'Deutsch',
-		es: 'Español',
-		fr: 'Français',
-		it: 'Italiano',
-		nl: 'Nederlands',
-		sv: 'Svenska',
-		zh: '中文',
-		pl: 'Polski'
-	};
-
-	let query: string = '';
-
-	let isAboutModalOpen: boolean = false;
-
-	const submitLocaleChange = (event: Event) => {
-		const select = event.target as HTMLSelectElement;
-		const newLocale = select.value;
-		document.cookie = `locale=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-		locale.set(newLocale);
-		window.location.reload();
-	};
-	const submitUpdateTheme: SubmitFunction = ({ action }) => {
-		const theme = action.searchParams.get('theme');
-		console.log('theme', theme);
-		if (theme) {
-			document.documentElement.setAttribute('data-theme', theme);
-		}
-	};
-
-	const searchGo = async (e: Event) => {
-		e.preventDefault();
-
-		if ($page.url.pathname === '/search') {
-			let url = new URL(window.location.href);
-			url.searchParams.set('query', query);
-			goto(url.toString(), { invalidateAll: true });
-		}
-
-		if (query) {
-			goto(`/search?query=${query}`);
-		}
-	};
+	// Languages available
+	const languages = [
+		{ value: 'en', label: 'English' },
+		{ value: 'es', label: 'Español' },
+		{ value: 'fr', label: 'Français' }
+	];
 </script>
 
-{#if isAboutModalOpen}
-	<AboutModal on:close={() => (isAboutModalOpen = false)} />
-{/if}
+<header
+	class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+	<nav class="container flex h-16 items-center">
+		<!-- Logo -->
+		<a href="/" class="mr-6 flex items-center space-x-2">
+			<img src="/favicon.png" alt="Logo" class="h-6 w-auto" />
+			<span class="text-lg font-semibold">AdventureLog</span>
+		</a>
 
-<div class="navbar bg-base-100">
-	<div class="navbar-start">
-		<div class="dropdown">
-			<div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-5 w-5"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 6h16M4 12h8m-8 6h16"
-					/></svg
-				>
+		<!-- Desktop Navigation -->
+		<div class="hidden md:flex md:flex-1 mr-4">
+			<div class="flex items-center gap-6">
+				{#each navItems as item}
+					{#if item.auth && data.user}
+						{@const Icon = item.icon}
+						<a
+							href={item.href}
+							class="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+						>
+							<Icon class="w-4 h-4" />
+							{item.label}
+						</a>
+					{/if}
+				{/each}
 			</div>
-			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<ul
-				tabindex="0"
-				class="menu dropdown-content mt-3 z-[1] p-2 shadow bg-neutral text-neutral-content rounded-box gap-2 w-96"
-			>
-				{#if data.user}
-					<li>
-						<button on:click={() => goto('/adventures')}>{$t('navbar.adventures')}</button>
-					</li>
-					<li>
-						<button on:click={() => goto('/collections')}>{$t('navbar.collections')}</button>
-					</li>
-					<li>
-						<button on:click={() => goto('/worldtravel')}>{$t('navbar.worldtravel')}</button>
-					</li>
-					<li>
-						<button on:click={() => goto('/map')}>{$t('navbar.map')}</button>
-					</li>
-					<li>
-						<button on:click={() => goto('/calendar')}>{$t('navbar.calendar')}</button>
-					</li>
-					<li>
-						<button on:click={() => goto('/users')}>{$t('navbar.users')}</button>
-					</li>
-				{/if}
-
-				{#if !data.user}
-					<li>
-						<button class="btn btn-primary" on:click={() => goto('/login')}
-							>{$t('auth.login')}</button
-						>
-					</li>
-					<li>
-						<button class="btn btn-primary" on:click={() => goto('/signup')}
-							>{$t('auth.signup')}</button
-						>
-					</li>
-				{/if}
-
-				{#if data.user}
-					<form class="flex gap-2">
-						<label class="input input-bordered flex items-center gap-2">
-							<input type="text" bind:value={query} placeholder={$t('navbar.search')} />
-
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 16 16"
-								fill="currentColor"
-								class="h-4 w-4 opacity-70"
-							>
-								<path
-									fill-rule="evenodd"
-									d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</label>
-						<button on:click={searchGo} type="submit" class="btn btn-primary"
-							>{$t('navbar.search')}</button
-						>
-					</form>
-				{/if}
-			</ul>
 		</div>
-		<a class="btn btn-ghost text-xl" href="/"
-			>AdventureLog <img src="/favicon.png" alt="Map Logo" class="w-10" /></a
-		>
-	</div>
-	<div class="navbar-center hidden lg:flex">
-		<ul class="menu menu-horizontal px-1 gap-2">
-			{#if data.user}
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/adventures')}
-						>{$t('navbar.adventures')}</button
-					>
-				</li>
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/collections')}
-						>{$t('navbar.collections')}</button
-					>
-				</li>
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/worldtravel')}
-						>{$t('navbar.worldtravel')}</button
-					>
-				</li>
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/map')}>{$t('navbar.map')}</button>
-				</li>
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/calendar')}><Calendar /></button>
-				</li>
-				<li>
-					<button class="btn btn-neutral" on:click={() => goto('/users')}
-						><AccountMultiple /></button
-					>
-				</li>
-			{/if}
 
-			{#if !data.user}
-				<li>
-					<button class="btn btn-primary" on:click={() => goto('/login')}>{$t('auth.login')}</button
-					>
-				</li>
-				<li>
-					<button class="btn btn-primary" on:click={() => goto('/signup')}
-						>{$t('auth.signup')}</button
-					>
-				</li>
-			{/if}
-
-			{#if data.user}
-				<form class="flex gap-2">
-					<label class="input input-bordered flex items-center gap-2">
-						<input
-							type="text"
-							bind:value={query}
-							class="grow"
-							placeholder={$t('navbar.search')}
-							bind:this={inputElement}
-						/><kbd class="kbd">/</kbd>
-					</label>
-					<button on:click={searchGo} type="submit" class="btn btn-neutral"
-						>{$t('navbar.search')}</button
-					>
-				</form>
-			{/if}
-		</ul>
-	</div>
-	<div class="navbar-end">
-		{#if data.user}
-			<Avatar user={data.user} />
-		{/if}
-		<div class="dropdown dropdown-bottom dropdown-end">
-			<div tabindex="0" role="button" class="btn m-1 ml-4">
-				<DotsHorizontal class="w-6 h-6" />
+		<!-- Search Bar -->
+		<div class="hidden md:flex md:flex-1 md:items-center md:justify-end md:gap-4">
+			<div class="w-full max-w-xs">
+				<Input type="search" placeholder="Search..." class="h-9" />
 			</div>
-			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<ul
-				tabindex="0"
-				class="dropdown-content bg-neutral text-neutral-content z-[1] menu p-2 shadow rounded-box w-52"
-			>
-				<button class="btn" on:click={() => (isAboutModalOpen = true)}>{$t('navbar.about')}</button>
-				<button
-					class="btn btn-sm mt-2"
-					on:click={() => (window.location.href = 'https://adventurelog.app')}
-					>{$t('navbar.documentation')}</button
-				>
-				<button
-					class="btn btn-sm mt-2"
-					on:click={() => (window.location.href = 'https://discord.gg/wRbQ9Egr8C')}>Discord</button
-				>
-				<button
-					class="btn btn-sm mt-2"
-					on:click={() => (window.location.href = 'https://buymeacoffee.com/seanmorley15')}
-					>{$t('navbar.support')} 💖</button
-				>
-				<p class="font-bold m-4 text-lg text-center">{$t('navbar.language_selection')}</p>
-				<form method="POST" use:enhance>
-					<select
-						class="select select-bordered w-full max-w-xs bg-base-100 text-base-content"
-						on:change={submitLocaleChange}
-						bind:value={$locale}
-					>
-						{#each $locales as loc (loc)}
-							<option value={loc} class="text-base-content">{languages[loc]}</option>
-						{/each}
-					</select>
-					<input type="hidden" name="locale" value={$locale} />
-				</form>
-				<p class="font-bold m-4 text-lg text-center">{$t('navbar.theme_selection')}</p>
-				<form method="POST" use:enhance={submitUpdateTheme}>
-					{#each themes as theme}
-						<li>
-							<button formaction="/?/setTheme&theme={theme.name}"
-								>{$t(`navbar.themes.${theme.name}`)}
-							</button>
-						</li>
+
+			<!-- Language Selector -->
+			<!-- <Select bind:value={currentLang}>
+				<SelectTrigger class="w-[100px]">
+					{currentLang.toUpperCase()}
+				</SelectTrigger>
+				<SelectContent>
+					{#each languages as lang}
+						<SelectItem value={lang.value}>{lang.label}</SelectItem>
 					{/each}
-				</form>
-			</ul>
+				</SelectContent>
+			</Select> -->
+
+			<Button variant="outline">About</Button>
+			<Toggle />
+			<Button variant="ghost" class="ml-2 w-9 h-9">
+				<SearchIcon class="w-4 h-4" />
+			</Button>
+			{#if data.user}
+				<Avatar user={data.user} />
+			{/if}
 		</div>
-	</div>
-</div>
+
+		<!-- Mobile Menu Button -->
+		<Button
+			variant="ghost"
+			class="ml-2 w-9 h-9 md:hidden"
+			on:click={() => (isMobileMenuOpen = !isMobileMenuOpen)}
+		>
+			{#if isMobileMenuOpen}
+				<XIcon class="w-4 h-4" />
+			{:else}
+				<MenuIcon class="w-4 h-4" />
+			{/if}
+			<span class="sr-only">Toggle menu</span>
+		</Button>
+	</nav>
+
+	<!-- Mobile Menu -->
+	{#if isMobileMenuOpen}
+		<div class="container md:hidden" transition:slide>
+			<div class="flex flex-col gap-4 pb-4">
+				<div class="flex flex-col gap-2">
+					{#each navItems as item}
+						<a
+							href={item.href}
+							class="flex items-center gap-2 rounded-md p-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+							on:click={() => (isMobileMenuOpen = false)}
+						>
+							<item.icon class="w-4 h-4" />
+							{item.label}
+						</a>
+					{/each}
+				</div>
+
+				<div class="space-y-2">
+					<Input type="search" placeholder="Search..." />
+
+					<!-- <Select type="single" bind:value={currentLang}>
+						<SelectTrigger>
+							{currentLang.toUpperCase()}
+						</SelectTrigger>
+						<SelectContent>
+							{#each languages as lang}
+								<SelectItem value={lang.value}>{lang.label}</SelectItem>
+							{/each}
+						</SelectContent>
+					</Select> -->
+
+					<div class="flex items-center gap-2">
+						<!-- Uncomment ThemeToggle if needed -->
+						<!-- <ThemeToggle /> -->
+						<Button on:click={() => (isShowingAboutModal = true)} variant="outline" class="flex-1"
+							>About</Button
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+</header>

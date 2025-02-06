@@ -3,6 +3,8 @@
 	import { register, init, locale, waitLocale } from 'svelte-i18n';
 	import { UmamiAnalyticsEnv } from '@lukulent/svelte-umami';
 	export let data;
+	import '../app.pcss';
+	import { ModeWatcher } from 'mode-watcher';
 
 	// Register your translations for each locale
 	register('en', () => import('../locales/en.json'));
@@ -51,6 +53,7 @@
 {/await}
 
 <UmamiAnalyticsEnv />
+<ModeWatcher />
 
 <svelte:head>
 	<title>AdventureLog</title>
