@@ -21,6 +21,7 @@
 	import Toggle from './ui/theme/toggle.svelte';
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import Avatar from './Avatar.svelte';
+	import AboutModal from './AboutModal.svelte';
 	// import ThemeToggle from "$project/ThemeToggle.svelte";
 
 	let isShowingAboutModal: boolean = false;
@@ -46,6 +47,10 @@
 		{ value: 'fr', label: 'Français' }
 	];
 </script>
+
+{#if isShowingAboutModal}
+	<AboutModal on:close={() => (isShowingAboutModal = false)} />
+{/if}
 
 <header
 	class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
@@ -93,7 +98,9 @@
 				</SelectContent>
 			</Select> -->
 
-			<Button variant="outline">About</Button>
+			<Button on:click={() => (isShowingAboutModal = true)} variant="outline" class="flex-1">
+				About
+			</Button>
 			<Toggle />
 			<Button variant="ghost" class="ml-2 w-9 h-9">
 				<SearchIcon class="w-4 h-4" />
