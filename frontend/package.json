@@ -27,6 +27,7 @@
 		"bits-ui": "^0.22.0",
 		"clsx": "^2.1.1",
 		"daisyui": "^4.12.6",
+		"embla-carousel-svelte": "^8.5.2",
 		"lucide-svelte": "^0.474.0",
 		"postcss": "^8.4.38",
 		"prettier": "^3.3.2",

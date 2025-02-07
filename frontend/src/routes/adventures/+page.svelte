@@ -209,8 +209,13 @@
 	<input id="my-drawer" type="checkbox" class="drawer-toggle" bind:checked={sidebarOpen} />
 	<div class="drawer-content">
 		<!-- Page content -->
-		<h1 class="text-center font-bold text-4xl mb-6">{$t('navbar.my_adventures')}</h1>
-		<p class="text-center">{count} {$t('adventures.count_txt')}</p>
+		<h1 class="text-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+			{$t('navbar.my_adventures')}
+		</h1>
+		<p class="text-center scroll-m-20 text-xl font-semibold tracking-tight mt-2">
+			{count}
+			{$t('adventures.count_txt')}
+		</p>
 		{#if adventures.length === 0}
 			<NotFound error={undefined} />
 		{/if}
