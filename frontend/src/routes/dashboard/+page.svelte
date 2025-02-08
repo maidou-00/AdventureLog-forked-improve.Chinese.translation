@@ -102,7 +102,9 @@
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 			{#each recentAdventures as adventure}
 				<div class="adventure-card">
-					<AdventureCard {adventure} user={data.user} readOnly />
+					{#if user}
+						<AdventureCard {adventure} {user} readOnly />
+					{/if}
 				</div>
 			{/each}
 		</div>

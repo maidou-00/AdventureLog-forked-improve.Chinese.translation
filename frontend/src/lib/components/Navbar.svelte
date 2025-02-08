@@ -17,13 +17,48 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import Toggle from './ui/theme/toggle.svelte';
-	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import Avatar from './Avatar.svelte';
+	import * as Select from '$lib/components/ui/select';
 	import AboutModal from './AboutModal.svelte';
+	import { enhance } from '$app/forms';
+	import { t, locale, locales } from 'svelte-i18n';
 
 	let isShowingAboutModal: boolean = false;
 	let isMobileMenuOpen = false;
-	let currentLang = 'en';
+
+	// Update the locale cookie and reload on change.
+	const submitLocaleChange = (event: CustomEvent<{ value: string }>) => {
+		const newLocale = event.detail?.value || $locale;
+		// Only proceed if the locale is actually changing
+		if (newLocale !== $locale) {
+			document.cookie = `locale=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+			locale.set(newLocale);
+			window.location.reload();
+		}
+	};
+
+	// Languages available for the language selector
+	let languages: { [key: string]: string } = {
+		en: 'English',
+		de: 'Deutsch',
+		es: 'Español',
+		fr: 'Français',
+		it: 'Italiano',
+		nl: 'Nederlands',
+		sv: 'Svenska',
+		zh: '中文',
+		pl: 'Polski'
+	};
+
+	function triggerLocaleChange(event: CustomEvent<{ value: string; label: string }>) {
+		console.log(event.detail.value);
+	}
+
+	// Initialize selectedLocale based on the current locale.
+	let selectedLocale: { value: string; label: string } = {
+		value: $locale || 'en',
+		label: $locale ? languages[$locale] : 'Unknown'
+	};
 
 	// Navigation items – ensure that the labels and icons are correctly matched
 	const navItems = [
@@ -33,13 +68,6 @@
 		{ href: '/collections', icon: BookImageIcon, label: 'Collections', auth: true },
 		{ href: '/users', icon: SearchIcon, label: 'Users', auth: true },
 		{ href: '/settings', icon: SettingsIcon, label: 'Settings', auth: true }
-	];
-
-	// Languages available for the language selector
-	const languages = [
-		{ value: 'en', label: 'English' },
-		{ value: 'es', label: 'Español' },
-		{ value: 'fr', label: 'Français' }
 	];
 </script>
 
@@ -81,16 +109,23 @@
 				<Input type="search" placeholder="Search..." class="h-9 w-48 pr-8" />
 				<SearchIcon class="absolute right-2 top-2 w-4 h-4 text-muted-foreground" />
 			</div>
-			<Select bind:value={currentLang}>
-				<SelectTrigger class="w-20">
-					{currentLang.toUpperCase()}
-				</SelectTrigger>
-				<SelectContent>
-					{#each languages as lang}
-						<SelectItem value={lang.value}>{lang.label}</SelectItem>
-					{/each}
-				</SelectContent>
-			</Select>
+			<div class="w-[200px]">
+				<Select.Root
+					bind:selected={selectedLocale}
+					on:selectedChange={(e) => triggerLocaleChange(e)}
+				>
+					<Select.Trigger>
+						<Select.Value placeholder="Select an option" />
+					</Select.Trigger>
+					<Select.Content>
+						{#each $locales as loc (loc)}
+							<Select.Item value={{ value: loc, label: languages[loc] }}>
+								{languages[loc]}
+							</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+			</div>
 			<Button on:click={() => (isShowingAboutModal = true)} variant="outline" class="px-3">
 				About
 			</Button>
@@ -132,22 +167,7 @@
 
 				<div class="flex flex-col gap-2">
 					<Input type="search" placeholder="Search..." class="w-full" />
-					<Select bind:value={currentLang}>
-						<SelectTrigger class="w-full">
-							{currentLang.toUpperCase()}
-						</SelectTrigger>
-						<SelectContent>
-							{#each languages as lang}
-								<SelectItem value={lang.value}>{lang.label}</SelectItem>
-							{/each}
-						</SelectContent>
-					</Select>
-					<div class="flex items-center gap-2">
-						<Button on:click={() => (isShowingAboutModal = true)} variant="outline" class="flex-1">
-							About
-						</Button>
-						<Toggle />
-					</div>
+					<!-- Mobile menu language selector (if needed) -->
 				</div>
 			</div>
 		</div>
