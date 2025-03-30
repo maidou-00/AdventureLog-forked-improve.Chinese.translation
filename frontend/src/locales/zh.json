@@ -1,28 +1,28 @@
 {
   "navbar": {
     "about": "关于冒险日志",
-    "adventures": "冒险",
-    "collections": "收藏",
-    "discord": "不和谐",
+    "adventures": "冒险", # this will require further improvements
+    "collections": "收藏", # this will require further improvements
+    "discord": "discord", # I think it is better to keep it as it is. 
     "documentation": "文档",
     "greeting": "你好",
-    "logout": "退出",
+    "logout": "登出", 
     "map": "地图",
     "my_adventures": "我的冒险",
-    "profile": "轮廓",
+    "profile": "我的档案",
     "search": "搜索",
     "settings": "设置",
-    "shared_with_me": "与我分享",
-    "theme_selection": "主题选择",
+    "shared_with_me": "与我共享的内容",
+    "theme_selection": "主题切换",
     "themes": {
-      "aqua": "阿夸",
-      "dark": "黑暗的",
+      "aqua": "海洋",
+      "dark": "深色",
       "forest": "森林",
-      "light": "光",
+      "light": "浅色",
       "night": "夜晚",
-      "aestheticDark": "审美黑暗",
-      "aestheticLight": "美学之光",
-      "northernLights": "北极光"
+      "aestheticDark": "暗之美学",
+      "aestheticLight": "光之美学",
+      "northernLights": "极光之境"
     },
     "users": "用户",
     "worldtravel": "环球旅行",
