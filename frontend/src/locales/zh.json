@@ -13,7 +13,7 @@
     "search": "搜索",
     "settings": "设置",
     "shared_with_me": "与我共享的内容",
-    "theme_selection": "主题切换",
+    "theme_selection": "切换主题",
     "themes": {
       "aqua": "海洋",
       "dark": "深色",
@@ -28,35 +28,35 @@
     "worldtravel": "环球旅行",
     "my_tags": "我的标签",
     "tag": "标签",
-    "language_selection": "语言",
-    "support": "支持",
+    "language_selection": "切换语言",
+    "support": "请作者喝杯咖啡（打赏）",
     "calendar": "日历",
-    "admin_panel": "管理面板"
+    "admin_panel": "管理员面板"
   },
-  "about": {
+  "about": {  # where is it? need to see the original words before translating
     "about": "关于",
     "license": "根据 GPL-3.0 许可证授权。",
     "message": "在美国用 ❤️ 制作。",
-    "nominatim_1": "位置搜索和地理编码由",
-    "nominatim_2": "提供。他们的数据根据ODbL许可证授权。",
+    "nominatim_1": "位置搜索和地理编码由", 
+    "nominatim_2": "提供。他们的数据根据ODbL许可证授权。", 
     "oss_attributions": "开源声明",
     "other_attributions": "其他声明可以在 README 文件中找到。",
     "source_code": "源代码",
     "close": "关闭"
   },
   "home": {
-    "desc_1": "轻松发现、规划和探索",
-    "desc_2": "AdventureLog 旨在简化您的旅程，为您提供工具和资源来计划、打包和导航您的下一次难忘的冒险。",
+    "desc_1": "发现·规划·探索",
+    "desc_2": "AdventureLog 专为简化旅程规划而设计，提供路线制定、装备整理、行程管理等全套工具，为您打造难以忘怀的旅行体验。",
     "feature_1": "旅行日志",
-    "feature_1_desc": "通过个性化的旅行日志记录您的冒险经历，并与朋友和家人分享您的经历。",
-    "feature_2": "旅行计划",
-    "feature_2_desc": "轻松创建自定义行程并获取行程的每日详细信息。",
-    "feature_3": "旅游地图",
-    "feature_3_desc": "使用交互式地图查看您在世界各地的旅行并探索新的目的地。",
+    "feature_1_desc": "使用个性化旅行日志记录您的冒险经历，并与亲友分享您的体验。",
+    "feature_2": "行程规划",
+    "feature_2_desc": "轻松创建自定义行程，并获取每日行程的详细安排",
+    "feature_3": "旅行地图",
+    "feature_3_desc": "通过交互式地图查看您的全球旅行足迹，并探索新的目的地。",
     "go_to": "前往冒险日志",
-    "hero_1": "探索世界上最惊险的冒险",
-    "hero_2": "使用 AdventureLog 发现并计划您的下一次冒险。\n探索令人惊叹的目的地、创建定制行程并随时随地保持联系。",
-    "key_features": "主要特点"
+    "hero_1": "遍历山海：重定义探险的维度", # the original words were -Discover the World's Most Thrilling Adventures-, I modified it slightly and translated into -Journey through all lands and seas: Redefining the boundaries of adventure.-
+    "hero_2": "用AdventureLog解锁你的下一站冒险! 打卡秘境胜地，自由规划行程，旅途实时在线不迷路！", # \n was removed in the begining of the second sentence
+    "key_features": "核心功能" # alternative: ”为什么选择AdventureLog?“ (Why choose AdventureLog?)
   },
   "adventures": {
     "collection_remove_success": "成功从合集中移除冒险！",
@@ -374,8 +374,8 @@
     "token_required": "密码重置需提供令牌和用户ID。",
     "about_this_background": "关于此背景",
     "join_discord": "加入 Discord",
-    "join_discord_desc": "分享您的照片，请发布到 #travel-share 频道。",
-    "photo_by": "摄影師：",
+    "join_discord_desc": "如欲分享您的照片，请加入Discord, 并将照片发布到 #travel-share 频道。",
+    "photo_by": "摄影师：",
     "change_password_error": "无法更改密码。\n当前密码无效或新密码无效。",
     "current_password": "当前密码",
     "password_change_lopout_warning": "修改密码后需重新登录。",
